@@ -5,14 +5,18 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 
-import httplib2
+import socket
+from apiclient import discovery
+
+socket.setdefaulttimeout(300) # 5 minutes
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 
 # The ID and range of a sample spreadsheet.
-SAMPLE_SPREADSHEET_ID = '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms'
-SAMPLE_RANGE_NAME = 'Class Data!A2:E'
+#SAMPLE_SPREADSHEET_ID = '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms'
+SAMPLE_SPREADSHEET_ID = '1SG5HGFDEl71RQOhdprxiabxa-rJzxn7CM5p1tHR5Sx0'
+SAMPLE_RANGE_NAME = 'Events!A5:N'
 
 def main():
     """Shows basic usage of the Sheets API.
@@ -37,16 +41,12 @@ def main():
         with open('token.pickle', 'wb') as token:
             pickle.dump(creds, token)
 
-   # http = httplib2.Http()
-   # http = creds.authorize(http)
-
     service = build('sheets', 'v4', credentials=creds)
-   # service = build('sheets', 'v4', http=http)
 
     # Call the Sheets API
     sheet = service.spreadsheets()
     result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID,
-                                range=SAMPLE_RANGE_NAME).execute()
+                                        range=SAMPLE_RANGE_NAME).execute()
     values = result.get('values', [])
 
     if not values:
@@ -56,6 +56,7 @@ def main():
         for row in values:
             # Print columns A and E, which correspond to indices 0 and 4.
             print('%s, %s' % (row[0], row[4]))
+            print(row)
 
 if __name__ == '__main__':
     main()
